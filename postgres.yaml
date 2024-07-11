@@ -49,13 +49,13 @@ spec:
             - name: "POSTGRES_USER"
               valueFrom:
                 secretKeyRef:
-                  name: secret-postgresuser
-                  key: data-name0
+                  name: secret-postgres
+                  key: user
             - name: "POSTGRES_PASSWORD"
               valueFrom:
                 secretKeyRef:
-                  name: secret-postgrespassword
-                  key: data-name0
+                  name: secret-postgres
+                  key: password
             - name: POSTGRESQL_DATABASE
               value: "demo"
           volumeMounts:
