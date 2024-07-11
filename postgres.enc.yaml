@@ -1,0 +1,138 @@
+apiVersion: v1
+# Create PVC
+kind: PersistentVolumeClaim
+metadata:
+    # Sets name of PV
+    name: postgresql-manifest-data-claim
+spec:
+    accessModes:
+        # Sets read and write access
+        - ReadWriteOnce
+    resources:
+        requests:
+            # Sets volume size
+            storage: 1Gi
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age19tfqxgdgx3fe96j8fyy0c65nsfj8ku8sl4ccfxnzpn3xpakylg5s8sgac7
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBsTUptVFBxdlVwaXJaRHJk
+            NWdlZmdLSlNhWU1KSHdnZVBaSXNpWnhWRWxNCjZ2WGUzQnJqdGtubVlUMi9YTVor
+            TmZFVjJMRkxUZ205VGRSQjI5NFM5NXcKLS0tIDhTd04rZDRTZ1dzaVhhYUN0S3BI
+            UkpqdnBnMXFoZm5QZ1ZoejNMK0MwbDgK7LBHPo2WcUwiu/5w2KETjVXN39hc1d/W
+            dBa5T8cHf+YURb7c0t+yMY04ESaui98B7eE81bL33oHEGrgkVYv7ig==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2024-07-11T08:28:30Z"
+    mac: ENC[AES256_GCM,data:qdqM90zLSmBq3Bs2P9laTQLLMdcw9NlRpcTbmcNi9XT3qvCYUvJkeUMehuemaUxDKKd7M8iavC4259uL46hLMgRq555dMdFFTz37QKE7UCc3v7eLesFc62ppuKMzbc3dus2ZQwNUl64fKMETd+3vS3hquJEidv7pAnnYYFaYEeo=,iv:fMyb6OfRNye79JoG/WBbN8REiKZzcHzOiH5cZ+JFZ2s=,tag:dS0ayewMz1N/9Alhoq05Gw==,type:str]
+    pgp: []
+    encrypted_suffix: Templates
+    version: 3.9.0
+---
+apiVersion: v1
+kind: Service
+metadata:
+    # Sets service name
+    name: postgres-manifest
+    labels:
+        # Labels and Selectors
+        app: postgres-manifest
+spec:
+    # Sets service type
+    type: ClusterIP
+    ports:
+        # Sets port to run the postgres application
+        - port: 5432
+    selector:
+        app: postgres-manifest
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age19tfqxgdgx3fe96j8fyy0c65nsfj8ku8sl4ccfxnzpn3xpakylg5s8sgac7
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBsTUptVFBxdlVwaXJaRHJk
+            NWdlZmdLSlNhWU1KSHdnZVBaSXNpWnhWRWxNCjZ2WGUzQnJqdGtubVlUMi9YTVor
+            TmZFVjJMRkxUZ205VGRSQjI5NFM5NXcKLS0tIDhTd04rZDRTZ1dzaVhhYUN0S3BI
+            UkpqdnBnMXFoZm5QZ1ZoejNMK0MwbDgK7LBHPo2WcUwiu/5w2KETjVXN39hc1d/W
+            dBa5T8cHf+YURb7c0t+yMY04ESaui98B7eE81bL33oHEGrgkVYv7ig==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2024-07-11T08:28:30Z"
+    mac: ENC[AES256_GCM,data:qdqM90zLSmBq3Bs2P9laTQLLMdcw9NlRpcTbmcNi9XT3qvCYUvJkeUMehuemaUxDKKd7M8iavC4259uL46hLMgRq555dMdFFTz37QKE7UCc3v7eLesFc62ppuKMzbc3dus2ZQwNUl64fKMETd+3vS3hquJEidv7pAnnYYFaYEeo=,iv:fMyb6OfRNye79JoG/WBbN8REiKZzcHzOiH5cZ+JFZ2s=,tag:dS0ayewMz1N/9Alhoq05Gw==,type:str]
+    pgp: []
+    encrypted_suffix: Templates
+    version: 3.9.0
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    # Sets Deployment name
+    name: postgres-manifest
+spec:
+    replicas: 1
+    strategy:
+        type: Recreate
+    selector:
+        matchLabels:
+            app: postgres-manifest
+    template:
+        metadata:
+            labels:
+                app: postgres-manifest
+        spec:
+            containers:
+                - name: postgres
+                  image: bitnami/postgresql:14.9.0
+                  imagePullPolicy: IfNotPresent
+                  ports:
+                    # Exposes container port
+                    - containerPort: 5432
+                  env:
+                    - name: POSTGRES_USER
+                      value: userdemomanifest
+                    - name: POSTGRES_PASSWORD
+                      value: My$ecrETPAss0rd*
+                    - name: POSTGRESQL_DATABASE
+                      value: demo
+                  volumeMounts:
+                    - mountPath: /bitnami/postgresql
+                      name: postgredb
+                  resources:
+                    requests:
+                        memory: 256Mi
+                        cpu: 100m
+                    limits:
+                        memory: 512Mi
+                        cpu: 500m
+            restartPolicy: Always
+            volumes:
+                - name: postgredb
+                  persistentVolumeClaim:
+                    claimName: postgresql-manifest-data-claim
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age19tfqxgdgx3fe96j8fyy0c65nsfj8ku8sl4ccfxnzpn3xpakylg5s8sgac7
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBsTUptVFBxdlVwaXJaRHJk
+            NWdlZmdLSlNhWU1KSHdnZVBaSXNpWnhWRWxNCjZ2WGUzQnJqdGtubVlUMi9YTVor
+            TmZFVjJMRkxUZ205VGRSQjI5NFM5NXcKLS0tIDhTd04rZDRTZ1dzaVhhYUN0S3BI
+            UkpqdnBnMXFoZm5QZ1ZoejNMK0MwbDgK7LBHPo2WcUwiu/5w2KETjVXN39hc1d/W
+            dBa5T8cHf+YURb7c0t+yMY04ESaui98B7eE81bL33oHEGrgkVYv7ig==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2024-07-11T08:28:30Z"
+    mac: ENC[AES256_GCM,data:qdqM90zLSmBq3Bs2P9laTQLLMdcw9NlRpcTbmcNi9XT3qvCYUvJkeUMehuemaUxDKKd7M8iavC4259uL46hLMgRq555dMdFFTz37QKE7UCc3v7eLesFc62ppuKMzbc3dus2ZQwNUl64fKMETd+3vS3hquJEidv7pAnnYYFaYEeo=,iv:fMyb6OfRNye79JoG/WBbN8REiKZzcHzOiH5cZ+JFZ2s=,tag:dS0ayewMz1N/9Alhoq05Gw==,type:str]
+    pgp: []
+    encrypted_suffix: Templates
+    version: 3.9.0

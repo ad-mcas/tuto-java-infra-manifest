@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: dso-demo-java
+    labels:
+        app: dso-demo-java
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: dso-demo-java
+    template:
+        metadata:
+            labels:
+                app: dso-demo-java
+        spec:
+            imagePullSecrets:
+                - name: registry-pull-secret
+            containers:
+                - name: dso-demo-java
+                  image: harbor.apps.c6.numerique-interieur.com/msa-crtad/java-demo:certification-delorme
+                  imagePullPolicy: Always
+                  env:
+                    - name: SPRING_DATASOURCE_USERNAME
+                      value: userdemomanifest
+                    - name: SPRING_DATASOURCE_PASSWORD
+                      value: My$ecrETPAss0rd*
+                    - name: SPRING_DATASOURCE_URL
+                      value: jdbc:postgresql://postgres-manifest:5432/demo
+                  resources:
+                    requests:
+                        memory: 256Mi
+                        cpu: 100m
+                    limits:
+                        memory: 512Mi
+                        cpu: 500m
+                  ports:
+                    # Exposes container port
+                    - containerPort: 8080
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age19tfqxgdgx3fe96j8fyy0c65nsfj8ku8sl4ccfxnzpn3xpakylg5s8sgac7
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBQY1k2T0tIMDFCaE1ubFdl
+            SkhLOENxcktpZlR6eElYNnJhTm04dUh1Q3lnCi93VjVrOHJGc2V2NWhBcng5L3dC
+            a00zWkxsbzhobXBHT1ZIYWpjWXQ4SjgKLS0tIFF4dW9RdWZ5K0FRYVFncVZSOGE4
+            RmhIa09aODBLWGFpY05Vbk5aeUgrMmcKJU8jf3j6mDRGTfbBM5zu2qHU7MAL765P
+            7jKbPefz+jcYDTHq63Zp06ERXKwb4wdQHhE1m6/dvb9UCoSQpSS6UQ==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2024-07-11T08:28:10Z"
+    mac: ENC[AES256_GCM,data:gVny5om3KWU6ah5DaS3EQgxvrZ5JBJrPUXZTaD3tP17mx1BdPX3RHrvjKInBqy8Q4IZC0fepHOWCjlem7jabmfhvnfA22/i5Ky4+fAQ3J0jUNA4liiGRCEKLMM5McCaJS15W6JKyMJY6scSh8OXrJh61zBeoBI3TJhaQHaA04Lw=,iv:2zkjLNv7YwlNUT+k2W9KSYLPZRlX0gb2VDjq68Cahjo=,tag:FHxpYECSmoTk5Ot8Uxpw1A==,type:str]
+    pgp: []
+    encrypted_suffix: Templates
+    version: 3.9.0
